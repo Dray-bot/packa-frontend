@@ -4,6 +4,9 @@ import { useUser } from "@clerk/nextjs";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 export default function AuthRedirect() {
   const { user, isLoaded } = useUser();
   const router = useRouter();
@@ -13,7 +16,7 @@ export default function AuthRedirect() {
 
     const syncAndRedirect = async () => {
       const res = await fetch(
-        "http://localhost:5000/api/auth/sync",
+        `${API_BASE}/api/auth/sync`,
         {
           method: "POST",
           headers: {

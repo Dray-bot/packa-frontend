@@ -15,6 +15,9 @@ import {
 } from "recharts";
 import { motion } from "framer-motion";
 
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 export default function AdminAnalytics() {
   const { user } = useUser();
 
@@ -32,8 +35,8 @@ export default function AdminAnalytics() {
 
       try {
         const [s, r] = await Promise.all([
-          fetch("http://localhost:5000/api/admin/stats").then((r) => r.json()),
-          fetch("http://localhost:5000/api/admin/riders").then((r) => r.json()),
+          fetch(`${API_BASE}/api/admin/stats`).then((r) => r.json()),
+          fetch(`${API_BASE}/api/admin/riders`).then((r) => r.json()),
         ]);
 
         setStats(s);

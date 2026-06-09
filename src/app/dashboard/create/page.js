@@ -5,6 +5,9 @@ import { useUser } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 export default function CreateShipment() {
   const { user, isLoaded } = useUser();
 
@@ -34,7 +37,7 @@ export default function CreateShipment() {
       setLoading(true);
 
       const res = await fetch(
-        "http://localhost:5000/api/payments/create-checkout-session",
+        `${API_BASE}/api/payments/create-checkout-session`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

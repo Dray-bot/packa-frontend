@@ -5,6 +5,9 @@ import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 export default function RiderPage() {
   const { user, isLoaded } = useUser();
 
@@ -17,7 +20,7 @@ export default function RiderPage() {
     if (!user?.id) return;
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/users");
+      const res = await fetch(`${API_BASE}/api/auth/users`);
       const data = await res.json();
 
       if (!Array.isArray(data)) return;
@@ -35,7 +38,7 @@ export default function RiderPage() {
     try {
       setRefreshing(true);
 
-      const res = await fetch("http://localhost:5000/api/shipments/rider", {
+      const res = await fetch(`${API_BASE}/api/shipments/rider`, {
         headers: { "x-clerk-id": user.id },
       });
 
@@ -56,7 +59,7 @@ export default function RiderPage() {
       setLoading(true);
 
       const res = await fetch(
-        "http://localhost:5000/api/shipments/update-status",
+        `${API_BASE}/api/shipments/update-status`,
         {
           method: "POST",
           headers: {
@@ -83,22 +86,23 @@ export default function RiderPage() {
 
   useEffect(() => {
     if (!isLoaded || !user?.id) return;
-    // call fetchRole asynchronously to avoid synchronous setState inside effect
+
     const run = async () => {
       try {
         await fetchRole();
-      } catch (e) {
-        // swallow errors; fetchRole handles its own errors/toasts
-      }
+      } catch (e) {}
     };
+
     run();
   }, [isLoaded, user?.id, fetchRole]);
 
   useEffect(() => {
     if (role !== "rider") return;
+
     const loadDeliveries = async () => {
       await fetchDeliveries();
     };
+
     loadDeliveries();
   }, [role, fetchDeliveries]);
 
@@ -264,7 +268,11 @@ function Status({ status }) {
   };
 
   return (
-    <span className={`inline-block mt-2 text-xs px-3 py-1 rounded-full ${map[status] || "bg-slate-100 text-slate-600"}`}>
+    <span
+      className={`inline-block mt-2 text-xs px-3 py-1 rounded-full ${
+        map[status] || "bg-slate-100 text-slate-600"
+      }`}
+    >
       {status}
     </span>
   );

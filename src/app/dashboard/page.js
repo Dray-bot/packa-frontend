@@ -6,6 +6,9 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import Link from "next/link";
 
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 export default function Dashboard() {
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
@@ -17,12 +20,12 @@ export default function Dashboard() {
 
   /* =========================
      SYNC USER
-  ========================= */
+  ========================== */
   useEffect(() => {
     const syncUser = async () => {
       if (!isLoaded || !user?.id) return;
 
-      await fetch("http://localhost:5000/api/auth/sync", {
+      await fetch(`${API_BASE}/api/auth/sync`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -36,8 +39,8 @@ export default function Dashboard() {
   }, [isLoaded, user?.id, user?.primaryEmailAddress?.emailAddress]);
 
   /* =========================
-     FETCH SHIPMENTS (SAFE)
-  ========================= */
+     FETCH SHIPMENTS
+  ========================== */
   const fetchShipments = useCallback(async () => {
     if (!user?.id) return;
 
@@ -45,7 +48,7 @@ export default function Dashboard() {
       setHistoryLoading(true);
 
       const res = await fetch(
-        `http://localhost:5000/api/shipments/user/${user.id}`
+        `${API_BASE}/api/shipments/user/${user.id}`
       );
 
       const data = await res.json();
@@ -65,14 +68,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!isLoaded || !user?.id) return;
-    // Avoid synchronous setState inside effect to prevent cascading renders.
-    // Schedule fetchShipments to run asynchronously.
     void Promise.resolve().then(fetchShipments);
   }, [isLoaded, user?.id, fetchShipments]);
 
   /* =========================
      APPLY RIDER
-  ========================= */
+  ========================== */
   const applyRider = async () => {
     if (!user?.id) return;
 
@@ -80,7 +81,7 @@ export default function Dashboard() {
       setLoading(true);
 
       const res = await fetch(
-        "http://localhost:5000/api/auth/apply-rider",
+        `${API_BASE}/api/auth/apply-rider`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -105,13 +106,13 @@ export default function Dashboard() {
 
   /* =========================
      TRACK
-  ========================= */
+  ========================== */
   const track = async () => {
     if (!trackingId) return toast.error("Enter tracking ID");
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/shipments/track/${trackingId}`
+        `${API_BASE}/api/shipments/track/${trackingId}`
       );
 
       const data = await res.json();
